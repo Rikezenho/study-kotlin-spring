@@ -22,8 +22,8 @@ fun PostCustomerRequest.toCustomerModel(): CustomerModel {
 fun PutCustomerRequest.toCustomerModel(previousValue: CustomerModel): CustomerModel {
     return CustomerModel(
         id = previousValue.id,
-        name = this.name ?: previousValue.name,
-        email = this.email ?: previousValue.email,
+        name = this.name,
+        email = this.email,
         status = previousValue.status
     )
 }
