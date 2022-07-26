@@ -9,3 +9,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jackson:
     default-property-inclusion: non_null
+
+jwt:
+  secret: fbd844be-f8ca-4ef3-9461-9bfb050f52a0
+  expiration: 999999
