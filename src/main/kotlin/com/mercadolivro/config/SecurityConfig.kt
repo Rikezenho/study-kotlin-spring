@@ -2,6 +2,7 @@ package com.mercadolivro.config
 
 import com.mercadolivro.repository.CustomerRepository
 import com.mercadolivro.security.AuthenticationFilter
+import com.mercadolivro.security.AuthorizationFilter
 import com.mercadolivro.security.JwtUtil
 import com.mercadolivro.service.UserDetailsCustomService
 import org.springframework.context.annotation.Bean
@@ -43,6 +44,14 @@ class SecurityConfig(
             AuthenticationFilter(
                 authenticationManager(),
                 customerRepository,
+                jwtUtil
+            )
+        )
+
+        http.addFilter(
+            AuthorizationFilter(
+                authenticationManager(),
+                userDetails,
                 jwtUtil
             )
         )
