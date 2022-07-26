@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("book")
+@RequestMapping("books")
 class BookController(
     val bookService: BookService,
     val customerService: CustomerService
