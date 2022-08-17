@@ -73,16 +73,19 @@ class CustomerServiceTest {
 
     @Test
     fun `should create customer and encrypt password`() {
-        val fakeCustomer = buildCustomer()
-        val fakePassword = UUID.randomUUID().toString()
+        val initialPassword = Math.random().toString()
+        val fakeCustomer = buildCustomer(password = initialPassword)
 
-        every { customerRepository.save(any()) } returns fakeCustomer
-        every { bCrypt.encode(any()) } returns fakePassword
+        val fakePassword = UUID.randomUUID().toString()
+        val fakeCustomerEncrypted = fakeCustomer.copy(password = fakePassword)
+
+        every { customerRepository.save(fakeCustomerEncrypted) } returns fakeCustomer
+        every { bCrypt.encode(initialPassword) } returns fakePassword
 
         customerService.create(fakeCustomer)
 
-        verify(exactly = 1) { customerRepository.save(any()) }
-        verify(exactly = 1) { bCrypt.encode(any()) }
+        verify(exactly = 1) { customerRepository.save(fakeCustomerEncrypted) }
+        verify(exactly = 1) { bCrypt.encode(initialPassword) }
     }
 
     fun buildCustomer(
