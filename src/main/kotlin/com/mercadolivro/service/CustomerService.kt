@@ -43,7 +43,10 @@ class CustomerService(
 
     fun update(customer: CustomerModel) {
         if (!customerRepository.existsById(customer.id!!)) {
-            throw Exception()
+            throw NotFoundException(
+                Errors.ML1101.message.format(customer.id),
+                Errors.ML1101.code
+            )
         }
         customerRepository.save(customer)
     }
