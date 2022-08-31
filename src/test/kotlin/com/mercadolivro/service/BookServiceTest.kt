@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Nested
@@ -107,5 +108,70 @@ class BookServiceTest {
         assertEquals("Book [${id}] not exists", error.message)
         assertEquals("ML-1001", error.errorCode)
         verify(exactly = 1) { bookRepository.findById(id) }
+    }
+
+    @Test
+    fun `should delete the book`() {
+        val id = Random.nextInt()
+        val book = buildBook(id = id)
+
+        every { bookRepository.findById(id) } returns Optional.of(book)
+        every { bookRepository.save(book) } returns book
+
+        bookService.delete(id)
+
+        verify(exactly = 1) { bookRepository.save(book) }
+    }
+
+    @Test
+    fun `should update the book`() {
+        val book = buildBook(name = "Novo livro")
+
+        every { bookRepository.save(book) } returns book
+
+        bookService.update(book)
+
+        verify(exactly = 1) { bookRepository.save(book) }
+    }
+
+    @Test
+    fun `should delete the books from a customer`() {
+        val customer = buildCustomer()
+        val books = listOf(buildBook(), buildBook())
+
+        every { bookRepository.findByCustomer(customer) } returns books
+        every { bookRepository.saveAll(books) } returns books
+
+        bookService.deleteByCustomer(customer)
+
+        assertEquals(BookStatus.DELETADO, books[0].status)
+        assertEquals(BookStatus.DELETADO, books[1].status)
+        verify(exactly = 1) { bookRepository.findByCustomer(customer) }
+        verify(exactly = 1) { bookRepository.saveAll(books) }
+    }
+
+    @Test
+    fun `should return all books by a list of ids`() {
+        val ids = setOf(1, 2, 3)
+        val books = listOf(buildBook(), buildBook())
+
+        every { bookRepository.findAllById(ids) } returns books
+
+        bookService.findAllByIds(ids)
+
+        verify(exactly = 1) { bookRepository.findAllById(ids) }
+    }
+
+    @Test
+    fun `should purchase all books`() {
+        val books = mutableListOf(buildBook(), buildBook())
+
+        every { bookRepository.saveAll(books) } returns books
+
+        bookService.purchase(books)
+
+        assertEquals(BookStatus.VENDIDO, books[0].status)
+        assertEquals(BookStatus.VENDIDO, books[1].status)
+        verify(exactly = 1) { bookRepository.saveAll(books) }
     }
 }
